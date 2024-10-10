@@ -3,23 +3,24 @@ import { Link } from '@inertiajs/react';
 
 export default function PaginationLinks ({ links = [], className = '' }) {
 
+
    return (
 
-    <div className={className} >
+    <div className={'flex flex-wrap gap-2 ' + className} >
         {links.map((link, index) => (
             link.url ? (
                 link.active ? (
                     <span 
                         key={index} 
                         dangerouslySetInnerHTML={{ __html: link.label }} 
-                        className={`inline-block px-4 py-2 mx-1 border border-gray-400 rounded bg-gray-800 text-white`}
+                        className={'px-3 py-1 border border-gray-400 rounded text-white bg-sky-600'}
                     />
                 ) : (
                     <Link 
                         key={index} 
                         href={link.url} 
                         dangerouslySetInnerHTML={{ __html: link.label }} 
-                        className={`inline-block px-4 py-2 mx-1 border border-gray-400 rounded text-black`}
+                        className="px-3 py-1 border border-gray-400 rounded text-black"
                     />
                 )
             ) : null

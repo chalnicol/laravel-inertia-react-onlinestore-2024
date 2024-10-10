@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('variant_quantity'); 
             $table->decimal('variant_base_price', 10, 2);
             $table->decimal('variant_cost_price', 10, 2);
-            $table->decimal('variant_promo_price', 10, 2)->nullable();
             $table->timestamps();
         });
     }

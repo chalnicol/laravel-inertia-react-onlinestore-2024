@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import MainLayout from '@/Layouts/MainLayout';
 import FlashMessage from '@/Components/FlashMessage';
 import PaginationLinks from '@/Components/PaginationLinks';
 import debounce from 'lodash/debounce';
@@ -36,7 +36,7 @@ const UsersIndex = ({ users, filters, auth, flash }) => {
 
     return (
 
-        <AuthenticatedLayout 
+        <MainLayout 
             header={
                 <>
                     <div className="text-sm mb-0.5">
@@ -139,7 +139,7 @@ const UsersIndex = ({ users, filters, auth, flash }) => {
 
             </div>
 
-        </AuthenticatedLayout>
+        </MainLayout>
     );
 };
 

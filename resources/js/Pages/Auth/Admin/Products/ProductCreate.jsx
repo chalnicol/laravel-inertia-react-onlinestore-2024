@@ -1,28 +1,25 @@
 import React, { useState, useMemo } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import MainLayout from '@/Layouts/MainLayout';
 import SelectSearch from '@/Components/SelectSearch';
 import TagsInput from '@/Components/TagsInput';
 import VariantInput from '@/Components/VariantInput';
 import FileInput from '@/Components/FileInput';
+import PrimaryButton from '@/Components/FileInput';
+
 
 
 const ProductCreate = ({ errors }) => {
 
-    const getCurrentDate = () => {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // Month starts from 0
-        const day = String(today.getDate()).padStart(2, '0');
+    const [ processing, setProcessing ] = useState(false);
 
-        return `${year}-${month}-${day}`;
-    };
+    const [ variants, setVariants ] = useState([]);
 
     const [formData, setFormData] = useState({
         name: '',
         cost_price : '',
         base_price : '',
-        promo_price : '',
+        promo_discount : '',
         promo_start : '',
         promo_end : '',
         quantity : '',
@@ -37,20 +34,19 @@ const ProductCreate = ({ errors }) => {
         variants: []
     });
 
-    const [ variants, setVariants ] = useState([]);
-
     const handleSubmit = (e) => {
 
         e.preventDefault();
+
+        setProcessing(true);
 
         const updatedFormData = { ...formData, variants : variants };
 
         router.post('/admin/products', updatedFormData, {
             forceFormData: true,
             onFinish : () => {
-                // setFormData( {...formData, ['image']: null });
+                setProcessing(false)
             },
-            
         });
     };
     
@@ -166,7 +162,7 @@ const ProductCreate = ({ errors }) => {
    
     return (
 
-        <AuthenticatedLayout
+        <MainLayout
             header={
                 <>
                     <div className="text-sm mb-0.5">
@@ -236,23 +232,16 @@ const ProductCreate = ({ errors }) => {
                             </div>
 
                             <div className="mb-4">
-                                <TagsInput className={`${errors.tags ? 'border-red-500' : 'border-gray-500' }`} onTagsChange={handleTagsChange} />
-                                {errors.tags && <div className="text-red-500 text-xs">{errors.tags}</div>}
-                            </div>
-
-                            <div className="mb-4">
                                 <textarea 
                                     name="description"
                                     onChange={handleInputChange} 
                                     value={formData.description}
-                                    className="rounded h-24 w-full text-sm block"
+                                    className="rounded min-h-24 lg:min-h-28 w-full text-sm block"
                                     placeholder="input description here"
                                 >
                                 </textarea>
                                 {errors.description && <p className="text-red-500 text-xs py-1">{errors.description}</p>}
                             </div>
-
-                            
 
                         </div>
 
@@ -285,26 +274,26 @@ const ProductCreate = ({ errors }) => {
                             <div className="mb-4">
                                 <input 
                                     type="text" 
-                                    name="promo_price"
-                                    value={formData.sale_price}  
+                                    name="promo_discount"
+                                    value={formData.promo_discount}  
                                     onChange={handleInputChange} 
-                                    className={`border rounded w-full py-2 px-3 text-sm ${ errors.promo_price ? 'border-red-500' : 'border-gray-500'}`}
-                                    placeholder="input promo price here *"
+                                    className={`border rounded w-full py-2 px-3 text-sm ${ errors.promo_discount ? 'border-red-500' : 'border-gray-500'}`}
+                                    placeholder="input promo discount %  here *"
                                 />
-                                {errors.promo_price && <p className="text-red-500 text-xs py-1">{errors.promo_price}</p>}
+                                {errors.promo_discount && <p className="text-red-500 text-xs py-1">{errors.promo_discount}</p>}
                             </div>
 
                             <div className="mb-4">
-                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden ${ errors.promo_start ? 'border-red-500' : 'border-gray-500'}`}>
-                                    <div className="border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2">
-                                        input promo end date *
+                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden focus-within:ring-1 focus-within:ring-blue-500 ${ errors.promo_start ? 'border-red-500' : 'border-gray-500'}`}>
+                                    <div tabIndex="-1" className="select-none border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2">
+                                        input promo start date *
                                     </div>
                                     <input 
                                         type="datetime-local" 
                                         name="promo_start"
                                         value={formData.promo_start}  
                                         onChange={handleInputChange} 
-                                        className="w-full lg:w-auto grow outline-none border-0 text-sm"
+                                        className="w-full lg:w-auto grow outline-none focus:outline-none focus:ring-0 border-0 text-sm"
                                     />
 
                                 </div>
@@ -313,8 +302,8 @@ const ProductCreate = ({ errors }) => {
 
                             <div className="mb-4">
 
-                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden ${ errors.promo_end ? 'border-red-500' : 'border-gray-500'}`}>
-                                    <div className="border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2">
+                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden focus-within:ring-1 focus-within:ring-blue-500 ${ errors.promo_end ? 'border-red-500' : 'border-gray-500'}`}>
+                                    <div tabIndex="-1" className="select-none border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2">
                                         input promo end date *
                                     </div>
                                     <input 
@@ -322,7 +311,7 @@ const ProductCreate = ({ errors }) => {
                                         name="promo_end"
                                         value={formData.promo_end}  
                                         onChange={handleInputChange} 
-                                        className="w-full lg:w-auto grow outline-none border-0 text-sm"
+                                        className="w-full lg:w-auto grow outline-none focus:outline-none focus:ring-0 border-0 text-sm"
                                     />
 
                                 </div>
@@ -331,8 +320,8 @@ const ProductCreate = ({ errors }) => {
 
                             <div className="mb-4">
 
-                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden  ${ errors.visibility ? 'border-red-500' : 'border-gray-500'}`}>
-                                    <div className="border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2 lg:mr-2">
+                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden focus-within:ring-1 focus-within:ring-blue-500 ${ errors.visibility ? 'border-red-500' : 'border-gray-500'}`}>
+                                    <div tabIndex="-1" className="select-none border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2 lg:mr-2">
                                         select visibility
                                     </div>
                                     <div className="grow flex items-center space-x-6 p-2">
@@ -357,6 +346,11 @@ const ProductCreate = ({ errors }) => {
 
                             </div>
 
+                            <div className="mb-4">
+                                <TagsInput className={`${errors.tags ? 'border-red-500' : 'border-gray-500' }`} onTagsChange={handleTagsChange} />
+                                {errors.tags && <div className="text-red-500 text-xs">{errors.tags}</div>}
+                            </div>
+
                         </div>
 
                     </div>
@@ -369,11 +363,11 @@ const ProductCreate = ({ errors }) => {
 
                         { variants.map ((variant, index) => (
                             <div key={variant.id} className="mb-4 lg:mb-0">
-                                <VariantInput variant={variant} errors={ formattedErrors['variants'][index] } onRemove={handleRemoveVariant} onValueChange={handleVariantChange}/>
+                                <VariantInput variant={variant} index={index} errors={ formattedErrors['variants'][index] } onRemove={handleRemoveVariant} onValueChange={handleVariantChange}/>
                             </div>
                         ))}
 
-                        <div className="w-full h-full min-h-52 border-4 border-dashed border-gray-300 bg-gray-100 flex items-center justify-center " onClick={handleAddVariant}>
+                        <div className="w-full h-full min-h-44 border-4 border-dashed border-gray-300 bg-gray-100 flex items-center justify-center " onClick={handleAddVariant}>
                             <span className="text-2xl font-medium text-gray-300">+ Add Variant</span>
                         </div>
                     
@@ -381,14 +375,15 @@ const ProductCreate = ({ errors }) => {
                     </div>
                    
 
-                    <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded">
+                    <button type="submit" className={`active:bg-blue-700 text-white py-2 px-4 rounded ${processing ? 'bg-blue-200' : 'bg-blue-500'}`} disabled={ processing } >
                         Create Product
                     </button>
+                   
 
                 </form>
             </div>
 
-        </AuthenticatedLayout>
+        </MainLayout>
         
     );
 };

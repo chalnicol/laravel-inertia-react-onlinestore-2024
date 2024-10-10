@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import debounce from 'lodash/debounce';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import MainLayout from '@/Layouts/MainLayout';
 import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
 import FlashMessage from '@/Components/FlashMessage';
 import PaginationLinks from '@/Components/PaginationLinks';
@@ -46,7 +46,7 @@ const TagIndex = ({ items, filters, flash }) => {
 
     return (
 
-        <AuthenticatedLayout 
+        <MainLayout 
             header={
                 <>
                     <div className="text-sm mb-0.5">
@@ -128,7 +128,7 @@ const TagIndex = ({ items, filters, flash }) => {
             <br />
             <ConfirmDeleteModal size="md" show={showModal} toDelete={toDelete} onDeleteConfirmation={handleDeleteConfirmation} />
 
-        </AuthenticatedLayout>
+        </MainLayout>
     );
 };
 

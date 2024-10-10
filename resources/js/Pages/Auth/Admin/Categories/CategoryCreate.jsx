@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import MainLayout from '@/Layouts/MainLayout';
 
 
 const CategoryCreate = ({ errors }) => {
@@ -15,7 +15,7 @@ const CategoryCreate = ({ errors }) => {
 
     return (
 
-        <AuthenticatedLayout
+        <MainLayout
             header={
                 <>
                     <div className="text-sm mb-0.5">
@@ -50,7 +50,7 @@ const CategoryCreate = ({ errors }) => {
             </div>
 
 
-        </AuthenticatedLayout>
+        </MainLayout>
         
     );
 };

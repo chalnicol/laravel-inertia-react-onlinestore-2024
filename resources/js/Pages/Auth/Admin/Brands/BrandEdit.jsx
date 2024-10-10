@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import MainLayout from '@/Layouts/MainLayout';
 
 const BrandEdit = ({ brand, errors }) => {
 
@@ -13,7 +13,7 @@ const BrandEdit = ({ brand, errors }) => {
 
     return (
 
-        <AuthenticatedLayout
+        <MainLayout
             header={
                 <>
                     <div className="text-sm mb-0.5">
@@ -50,7 +50,7 @@ const BrandEdit = ({ brand, errors }) => {
 
 
 
-        </AuthenticatedLayout>
+        </MainLayout>
     );
 };
 

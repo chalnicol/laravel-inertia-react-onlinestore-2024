@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AuthenticatedLayout from '@/Layouts/MainLayout';
 import Thumbs from '@/Components/Thumbs';
 
 import { Head, router } from '@inertiajs/react';

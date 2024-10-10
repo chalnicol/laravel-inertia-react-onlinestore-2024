@@ -7,6 +7,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PageController;
+
 
 
 use App\Http\Middleware\AdminMiddleware;
@@ -15,18 +17,23 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
+// Route::get('/', function () {
+//     if (Auth::check()) {
+//         return redirect('/home');
+//     }
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
 
-    if (Auth::check()) {
-        return redirect('/home');
-    }
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+//public routes
+Route::get('/',  [PageController::class, 'welcome'])->name('welcome');
+Route::get('/product/{product}',  [PageController::class, 'show'])->name('product.show');
+
+
 
 Route::get('/home', function () {
     return Inertia::render('Home');

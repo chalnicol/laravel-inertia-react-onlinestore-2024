@@ -96,13 +96,14 @@ class ProductController extends Controller
             'name' => ucwords($validated['name']),
             'cost_price' => $hasVariants ? null : $validated['cost_price'],
             'base_price' => $hasVariants ? null : $validated['base_price'],
-            'promo_price' => $hasVariants ? null : $validated['promo_price'],
+            'quantity' => $hasVariants ? null : $validated['quantity'],
+            'promo_discount' => $validated['promo_discount'],
             'promo_start' => $validated['promo_start'],
             'promo_end' => $validated['promo_end'],
             'slug' => $slug,
             'visibility' => $validated['visibility'],
             'description' => $validated['description'],
-            'quantity' => $hasVariants ? null : $validated['quantity'],
+            
             'image' => $imagePath,
             'sku' => $sku,
             'category_id' => $validated['category_id'],
@@ -126,7 +127,6 @@ class ProductController extends Controller
                     'variant_quantity' => $variant['variant_quantity'],
                     'variant_base_price' => $variant['variant_base_price'],
                     'variant_cost_price' => $variant['variant_cost_price'],
-                    'variant_promo_price' => $variant['variant_promo_price'],
                     'product_id' => $product->id,
                 ]);
             }
@@ -196,13 +196,13 @@ class ProductController extends Controller
             'name' => ucwords($validated['name']),
             'cost_price' => $hasVariants ? null : $validated['cost_price'],
             'base_price' => $hasVariants ? null : $validated['base_price'],
-            'promo_price' => $hasVariants ? null : $validated['promo_price'],
+            'quantity' => $hasVariants ? null : $validated['quantity'],
+            'promo_discount' => $validated['promo_discount'],
             'promo_start' => $validated['promo_start'],
             'promo_end' => $validated['promo_end'],
             'slug' => $slug,
             'visibility' => $validated['visibility'],
             'description' => $validated['description'],
-            'quantity' => $validated['quantity'],
             'image' => $imagePath,
             'sku' => $sku,
             'category_id' => $validated['category_id'],
@@ -243,11 +243,11 @@ class ProductController extends Controller
                         'variant_quantity' => $variantData['variant_quantity'],
                         'variant_base_price' => $variantData['variant_base_price'],
                         'variant_cost_price' => $variantData['variant_cost_price'],
-                        'variant_promo_price' => $variantData['variant_promo_price'],
                     ]);
 
                 }else {
 
+                    $variantImagePath = null;
 
                     if (isset($variantData['variant_image']) && $variantData['variant_image']) {
                         //..
@@ -261,7 +261,6 @@ class ProductController extends Controller
                         'variant_quantity' => $variantData['variant_quantity'],
                         'variant_base_price' => $variantData['variant_base_price'],
                         'variant_cost_price' => $variantData['variant_cost_price'],
-                        'variant_promo_price' => $variantData['variant_promo_price'],
                         'product_id' => $product->id,
                     ]);
 
@@ -325,9 +324,6 @@ class ProductController extends Controller
                 $id ? 'unique:products,name,'. $id : 'unique:products,name'
             ],
             'description' => 'nullable|string',
-            //'quantity' => 'nullable|numeric|min:1',
-            // 'cost_price' => 'sometimes|nullable|numeric|min:1',
-            // 'base_price' => 'sometimes|nullable|numeric|min:1|gt:cost_price',
             'quantity' => [
                 'nullable',
                 'numeric',
@@ -346,9 +342,9 @@ class ProductController extends Controller
                 'min:1',
                 Rule::requiredIf(!$request->filled('variants'))
             ],
-            'promo_price' => 'nullable|numeric|required_with:promo_start,promo_end|min:1|gt:cost_price|lte:base_price',
-            'promo_start' => 'nullable|date|required_with:promo_price,promo_end|after_or_equal:now',
-            'promo_end' => 'nullable|date|required_with:promo_price,promo_start|after:promo_start',
+            'promo_discount' => 'nullable|numeric|required_with:promo_start,promo_end|min:1|max:99',
+            'promo_start' => 'nullable|date|required_with:promo_discount,promo_end|after_or_equal:now',
+            'promo_end' => 'nullable|date|required_with:promo_discount,promo_start|after:promo_start',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:50',
@@ -372,16 +368,9 @@ class ProductController extends Controller
             'variants.*.variant_quantity' => 'required|integer|min:1',
             'variants.*.variant_cost_price' => 'required|numeric|min:0.01',
             'variants.*.variant_base_price' => 'required|numeric|min:0.01|gt:variants.*.variant_cost_price', // Must be greater than variant_cost_price
-            'variants.*.variant_promo_price' => 'nullable|numeric|min:0.01|gt:variants.*.variant_cost_price|lte:variants.*.variant_base_price', // Must be greater than
             'tags' => 'array', // Ensure it's an array
             'tags.*' => 'required|string|max:255|distinct' // Ensure tags are unique within the product
         ];
-
-        // if (!$request->filled('variants')) {
-        //     $validationRules['cost_price'] = 'required|numeric|min:1';
-        //     $validationRules['base_price'] = 'required|numeric|min:1|gt:cost_price';
-        //     $validationRules['quantity'] = 'required|numeric|min:1';
-        // }
 
         $messages = [
             'name.required' => 'The product name is required.',
@@ -397,11 +386,10 @@ class ProductController extends Controller
             'base_price.min' => 'The base price must be greater than 1.',
             'base_price.gt' => 'The base price must be greater than the cost price.',
 
-            'promo_price.numeric' => 'The promo price must be a number.',
-            'promo_price.min' => 'The promo price must be greater than 1.',
-            'promo_price.gt' => 'The promo price must be greater than the cost price.',
-            'promo_price.lte' => 'The promo price must be less than or equal the base price.',
-            'promo_price.required_with' => 'The promo price is required when any of the promo fields is filled.',
+            'promo_discount.numeric' => 'The promo price must be a number.',
+            'promo_discount.min' => 'The promo price must be greater than 1.',
+            'promo_discount.max' => 'The promo price may not be greater than the 100.',
+            'promo_discount.required_with' => 'The promo price is required when any of the promo fields is filled.',
 
             'promo_start.date' => 'The promo start date must be a valid date.',
             'promo_start.after_or_equal' => 'The promo start date must be a date after or equal to now.',
@@ -439,10 +427,6 @@ class ProductController extends Controller
             'variants.*.variant_cost_price.required' => 'The variant cost price is required.',
             'variants.*.variant_cost_price.numeric' => 'The variant cost price must be a number.',
             'variants.*.variant_cost_price.min' => 'The variant cost price must be greater than 0.',
-            'variants.*.variant_promo_price.numeric' => 'The variant promo price must be a number.',
-            'variants.*.variant_promo_price.min' => 'The variant promo price must be greater than 0.',
-            'variants.*.variant_promo_price.gt' => 'The variant promo price must be greater than the variant cost price.',
-            'variants.*.variant_promo_price.lte' => 'The variant promo price must be less than or equal the variant base price.',
             'tags.required' => 'At least one tag is required.',
             'tags.array' => 'Tags must be an array.',
             'tags.*.required' => 'Each tag is required.',

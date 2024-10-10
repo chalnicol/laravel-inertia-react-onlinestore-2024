@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable(); // Description of the product
             $table->decimal('cost_price', 10, 2)->nullable(); // Price of the product
             $table->decimal('base_price', 10, 2)->nullable(); // Price of the product
-            $table->decimal('promo_price', 10, 2)->nullable(); // Price of the product
+            $table->integer('promo_discount')->nullable(); // Price of the product
             $table->dateTime('promo_start')->nullable(); 
             $table->dateTime('promo_end')->nullable(); 
             $table->string('visibility')->default('draft'); 

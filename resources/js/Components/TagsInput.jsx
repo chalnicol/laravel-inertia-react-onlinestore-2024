@@ -56,24 +56,25 @@ const TagsInput = ({ value = [], className="", onTagsChange }) => {
                 <div className="flex flex-wrap items-center gap-1 p-2 min-h-10">
                     
                     {tags && tags.length > 0 && (
-                        tags.map((tag, index) => (
-                            <div
-                                key={index}
-                                className="bg-gray-600 text-white text-sm px-3 py-0.5 rounded flex items-center space-x-3"
-                            >
-                                <span>{tag}</span>
-                                <button
-                                    type="button"
-                                    className="text-white hover:text-red-400"
-                                    onClick={() => removeTag(tag)}
+                            tags.map((tag, index) => (
+                                <div
+                                    key={index}
+                                    className="bg-gray-600 text-white text-sm px-3 py-0.5 rounded flex items-center space-x-3"
                                 >
-                                    &times;
-                                </button>
-                            </div>
-                        ))
-                    )}
+                                    <span>{tag}</span>
+                                    <button
+                                        type="button"
+                                        className="text-white hover:text-red-400"
+                                        onClick={() => removeTag(tag)}
+                                    >
+                                        &times;
+                                    </button>
+                                </div>
+                            ))
+                        )
+                    }
+                    { tags && tags.length == 0 && <span className="text-xs text-gray-500">-- empty --</span>}
                     
-
                 </div>
                 <div className="flex pb-2 px-2 gap-2">
                     <div className="grow">

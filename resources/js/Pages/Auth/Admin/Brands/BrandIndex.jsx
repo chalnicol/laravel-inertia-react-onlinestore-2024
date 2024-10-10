@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import debounce from 'lodash/debounce';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import MainLayout from '@/Layouts/MainLayout';
 import FlashMessage from '@/Components/FlashMessage';
 import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
 import PaginationLinks from '@/Components/PaginationLinks';
@@ -47,7 +47,7 @@ const BrandIndex = ({ brands, filters, flash }) => {
 
     return (
 
-        <AuthenticatedLayout 
+        <MainLayout 
             header={
                 <>
                     <div className="text-sm mb-0.5">
@@ -145,7 +145,7 @@ const BrandIndex = ({ brands, filters, flash }) => {
 
 
 
-        </AuthenticatedLayout>
+        </MainLayout>
     );
 };
 

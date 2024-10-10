@@ -17,6 +17,9 @@ export default {
                 // sans: ['Figtree', ...defaultTheme.fontFamily.sans],
                 sans: ['Poppins', 'sans-serif'],
             },
+            boxShadow: {
+                'bottom': '0 4px 6px rgba(0, 0, 0, 0.1)', // Custom bottom shadow
+              }
         },
     },
 

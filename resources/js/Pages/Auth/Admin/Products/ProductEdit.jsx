@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import MainLayout from '@/Layouts/MainLayout';
 import SelectSearch from '@/Components/SelectSearch';
 import TagsInput from '@/Components/TagsInput';
 import VariantInput from '@/Components/VariantInput';
@@ -11,23 +11,27 @@ const ProductEdit = ({ product, errors }) => {
 
 
     const [formData, setFormData] = useState({
+        
+        image : null,
+
         name: product.name || '',
         cost_price : product.cost_price || '',
         base_price : product.base_price || '',
-        promo_price : product.promo_price || '',
+        promo_discount : product.promo_discount || '',
         promo_start : product.promo_start || '',
-        promo_end : product.promo_end ||'',
+        promo_end : product.promo_end || '',
         quantity : product.quantity || '',
         description : product.description || '',
         category_id: product.category.id || '',
         brand_id: product.brand.id || '',
         tags : [],
-        image : null,
         visibility : product.visibility,
         variants: product.variants || [],
         _method : 'PUT'
     });
    
+    const [ processing, setProcessing ] = useState(false);
+
     const [variants, setVariants] = useState(product.variants || []);
     const [ tags, setTags ] = useState (product.tags && product.tags.length > 0 
         ? product.tags.map(tag => tag.name)
@@ -36,6 +40,7 @@ const ProductEdit = ({ product, errors }) => {
     const handleSubmit = (e) => {
 
         e.preventDefault();
+        setProcessing (true);
 
         const updatedFormData = { ...formData, 
             variants : variants,
@@ -45,7 +50,7 @@ const ProductEdit = ({ product, errors }) => {
         router.post(`/admin/products/${product.id}`, updatedFormData, {
             forceFormData: true,
             onFinish : () => {
-                // setFormData( {...formData, ['image']: null });
+                setProcessing (false);
             },
             
         });
@@ -114,6 +119,7 @@ const ProductEdit = ({ product, errors }) => {
     };
 
     const handleVariantChange = (updatedVariantData, id) => {
+
         setVariants((prevVariants) => 
             prevVariants.map((variant) => 
                 variant.id === id ? { ...variant, ...updatedVariantData } : variant
@@ -160,11 +166,10 @@ const ProductEdit = ({ product, errors }) => {
     
 
     }, [errors]);
-
    
     return (
 
-        <AuthenticatedLayout
+        <MainLayout
             header={
                 <>
                     <div className="text-sm mb-0.5">
@@ -236,22 +241,21 @@ const ProductEdit = ({ product, errors }) => {
 
                             </div>
 
-                            <div className="mb-4">
-                                <TagsInput className={`${errors.tags ? 'border-red-500' : 'border-gray-500' }`} value={tags} onTagsChange={handleTagsChange} />
-                                {errors.tags && <div className="text-red-500 text-xs">{errors.tags}</div>}
-                            </div>
+                            
 
                             <div className="mb-4">
                                 <textarea 
                                     name="description"
                                     onChange={handleInputChange} 
-                                    value={ formData.description}
-                                    className="rounded h-24 w-full text-sm block"
+                                    value={formData.description}
+                                    className="rounded min-h-24 lg:min-h-28 w-full text-sm block"
                                     placeholder="input description here"
                                 >
                                 </textarea>
                                 {errors.description && <p className="text-red-500 text-xs py-1">{errors.description}</p>}
                             </div>
+
+                           
 
                             
 
@@ -286,26 +290,26 @@ const ProductEdit = ({ product, errors }) => {
                             <div className="mb-4">
                                 <input 
                                     type="text" 
-                                    name="promo_price"
-                                    value={formData.promo_price}  
+                                    name="promo_discount"
+                                    value={formData.promo_discount}  
                                     onChange={handleInputChange} 
-                                    className={`border rounded w-full py-2 px-3 text-sm ${ errors.promo_price ? 'border-red-500' : 'border-gray-500'}`}
-                                    placeholder="input promo price here *"
+                                    className={`border rounded w-full py-2 px-3 text-sm ${ errors.promo_discount ? 'border-red-500' : 'border-gray-500'}`}
+                                    placeholder="input promo discount % here *"
                                 />
-                                {errors.promo_price && <p className="text-red-500 text-xs py-1">{errors.promo_price}</p>}
+                                {errors.promo_discount && <p className="text-red-500 text-xs py-1">{errors.promo_discount}</p>}
                             </div>
 
                             <div className="mb-4">
-                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden ${ errors.promo_end ? 'border-red-500' : 'border-gray-500'}`}>
-                                    <div className="border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2">
-                                        input promo end date *
+                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden focus-within:ring-1 focus-within:ring-blue-500 ${ errors.promo_start ? 'border-red-500' : 'border-gray-500'}`}>
+                                    <div tabIndex="-1" className="select-none border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2">
+                                        input promo start date *
                                     </div>
                                     <input 
                                         type="datetime-local" 
                                         name="promo_start"
                                         value={formData.promo_start}  
                                         onChange={handleInputChange} 
-                                        className="w-full lg:w-auto grow outline-none border-0 text-sm"
+                                        className="w-full lg:w-auto grow outline-none focus:outline-none focus:ring-0 border-0 text-sm"
                                     />
 
                                 </div>
@@ -314,8 +318,8 @@ const ProductEdit = ({ product, errors }) => {
 
                             <div className="mb-4">
 
-                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden ${ errors.promo_end ? 'border-red-500' : 'border-gray-500'}`}>
-                                    <div className="border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2">
+                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden focus-within:ring-1 focus-within:ring-blue-500 ${ errors.promo_end ? 'border-red-500' : 'border-gray-500'}`}>
+                                    <div tabIndex="-1" className="select-none border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2">
                                         input promo end date *
                                     </div>
                                     <input 
@@ -323,7 +327,7 @@ const ProductEdit = ({ product, errors }) => {
                                         name="promo_end"
                                         value={formData.promo_end}  
                                         onChange={handleInputChange} 
-                                        className="w-full lg:w-auto grow outline-none border-0 text-sm"
+                                        className="w-full lg:w-auto grow outline-none focus:outline-none focus:ring-0 border-0 text-sm"
                                     />
 
                                 </div>
@@ -332,8 +336,8 @@ const ProductEdit = ({ product, errors }) => {
 
                             <div className="mb-4">
 
-                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden  ${ errors.visibility ? 'border-red-500' : 'border-gray-500'}`}>
-                                    <div className="border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2 lg:mr-2">
+                                <div className={`lg:flex items-center bg-white rounded border border-gray-500 text-sm text-gray-500 overflow-hidden focus-within:ring-1 focus-within:ring-blue-500 ${ errors.visibility ? 'border-red-500' : 'border-gray-500'}`}>
+                                    <div tabIndex="-1" className="select-none border-r-0 border-b lg:min-w-[200px] lg:border-r lg:border-b-0 border-gray-300 bg-gray-200 p-2 lg:mr-2">
                                         select visibility
                                     </div>
                                     <div className="grow flex items-center space-x-6 p-2">
@@ -358,6 +362,11 @@ const ProductEdit = ({ product, errors }) => {
 
                             </div>
 
+                            <div className="mb-4">
+                                <TagsInput className={`${errors.tags ? 'border-red-500' : 'border-gray-500' }`} value={tags} onTagsChange={handleTagsChange} />
+                                {errors.tags && <div className="text-red-500 text-xs">{errors.tags}</div>}
+                            </div>
+
                         </div>
 
                     </div>
@@ -370,26 +379,25 @@ const ProductEdit = ({ product, errors }) => {
 
                         { variants.map ((variant, index) => (
                             <div key={variant.id} className="mb-4 lg:mb-0">
-                                <VariantInput variant={variant} errors={ formattedErrors['variants'][index] } onRemove={handleRemoveVariant} onValueChange={handleVariantChange}/>
+                                <VariantInput variant={variant} index={index} errors={ formattedErrors['variants'][index] } onRemove={handleRemoveVariant} onValueChange={handleVariantChange}/>
                             </div>
                         ))}
 
-                        <div className="w-full h-full min-h-52 border-4 border-dashed border-gray-300 bg-gray-100 flex items-center justify-center " onClick={handleAddVariant}>
+                        <div className="w-full h-full min-h-44 border-4 border-dashed border-gray-300 bg-gray-100 flex items-center justify-center " onClick={handleAddVariant}>
                             <span className="text-2xl font-medium text-gray-300">+ Add Variant</span>
                         </div>
                     
 
                     </div>
                    
-
-                    <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded">
+                    <button type="submit" className={`active:bg-blue-700 text-white py-2 px-4 rounded ${processing ? 'bg-blue-200' : 'bg-blue-500'}`} disabled={ processing } >
                         Edit Product
                     </button>
 
                 </form>
             </div>
 
-        </AuthenticatedLayout>
+        </MainLayout>
         
     );
 };
