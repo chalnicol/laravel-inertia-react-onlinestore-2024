@@ -1,26 +1,27 @@
-import React, { useState } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
-import debounce from 'lodash/debounce';
-import MainLayout from '@/Layouts/MainLayout';
 import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
 import FlashMessage from '@/Components/FlashMessage';
 import PaginationLinks from '@/Components/PaginationLinks';
-
-
+import MainLayout from '@/Layouts/MainLayout';
+import { Head, Link, router } from '@inertiajs/react';
+import debounce from 'lodash/debounce';
+import { useState } from 'react';
 
 const TagIndex = ({ items, filters, flash }) => {
-
     // const { brands } = usePage().props;
     const [showModal, setShowModal] = useState(false);
     const [toDelete, setToDelete] = useState(null);
-   
+
     // State for search input
     const [search, setSearch] = useState(filters.search || '');
 
     // Function to handle search with debounce
     const handleSearch = debounce((query) => {
-        router.get(route('tags.index'), { search: query }, { preserveState: true, replace:true });
-    }, 500); 
+        router.get(
+            route('tags.index'),
+            { search: query },
+            { preserveState: true, replace: true },
+        );
+    }, 500);
 
     // Handle onChange and update search state
     const onSearchChange = (e) => {
@@ -30,27 +31,27 @@ const TagIndex = ({ items, filters, flash }) => {
 
     const confirmDelete = (item) => {
         setToDelete(item);
-        setShowModal(true); 
-    }
-    const handleDeleteConfirmation = ( confirmed ) => {
+        setShowModal(true);
+    };
+    const handleDeleteConfirmation = (confirmed) => {
         if (confirmed) {
             router.delete(`/admin/tags/${toDelete.id}`, {
                 onSuccess: () => setShowModal(false),
             });
-        }   else {
+        } else {
             setShowModal(false);
         }
     };
-   
-
 
     return (
-
-        <MainLayout 
+        <MainLayout
             header={
                 <>
-                    <div className="text-sm mb-0.5">
-                        <Link href={'/admin'} className="text-orange-600">Admin</Link> &raquo;
+                    <div className="mb-0.5 text-sm">
+                        <Link href={'/admin'} className="text-orange-600">
+                            Admin
+                        </Link>{' '}
+                        &raquo;
                     </div>
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">
                         Tags
@@ -59,75 +60,88 @@ const TagIndex = ({ items, filters, flash }) => {
             }
         >
             <Head title="Tags" />
-            
-            <div className="max-full max-w-7xl px-4 mx-auto">
 
+            <div className="max-full mx-auto max-w-7xl px-4">
                 <FlashMessage flash={flash} />
 
-                <div className="md:flex gap-2 w-full mt-4">
-
-                    
+                <div className="mt-4 w-full gap-2 md:flex">
                     <div className="grow">
                         <input
                             type="text"
                             placeholder="Filter tags..."
                             value={search}
                             onChange={onSearchChange} // Trigger search on input change
-                            className="border border-gray-300 px-4 py-2 rounded w-full mb-2"
+                            className="mb-2 w-full rounded border border-gray-300 px-4 py-2"
                         />
                     </div>
-                   
-                   
                 </div>
-               
-                {(items.data && items.data.length > 0) ? (
+
+                {items.data && items.data.length > 0 ? (
                     <>
-                    <div className="overflow-x-auto w-full mb-6">
-                        <table className="min-w-[600px] w-full text-sm">
-                            <thead className="bg-gray-800 text-white">
-                                <tr>
-                                    <th className="px-4 py-2 text-left">#</th>
-                                    <th className="px-4 py-2 text-left">Name</th>
-                                    <th className="px-4 py-2 text-left">Product Linked</th>
-                                    <th className="px-4 py-2 text-left">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {items.data.map(item => (
-                                    <tr key={item.id} className="odd:bg-gray-100 even:bg-gray-200 border-gray-300">
-                                        <td className="px-4 py-2">{item.id}</td>
-                                        <td className="px-4 py-2">{item.name}</td>
-                                        <td className="px-4 py-2">{item.products.length}</td>
-                                        <td className="px-4 py-2">
-                                            
-                                            <button 
-                                                onClick={ () => confirmDelete(item) }
-                                                className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded ml-2">
-                                                Delete
-                                            </button>
-                                        </td>
+                        <div className="mb-6 w-full overflow-x-auto">
+                            <table className="w-full min-w-[600px] text-sm">
+                                <thead className="bg-gray-800 text-white">
+                                    <tr>
+                                        <th className="px-4 py-2 text-left">
+                                            #
+                                        </th>
+                                        <th className="px-4 py-2 text-left">
+                                            Name
+                                        </th>
+                                        <th className="px-4 py-2 text-left">
+                                            Product Linked
+                                        </th>
+                                        <th className="px-4 py-2 text-left">
+                                            Actions
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {items.data.map((item) => (
+                                        <tr
+                                            key={item.id}
+                                            className="border-gray-300 odd:bg-gray-100 even:bg-gray-200"
+                                        >
+                                            <td className="px-4 py-2">
+                                                {item.id}
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                {item.name}
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                {item.products.length}
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                <button
+                                                    onClick={() =>
+                                                        confirmDelete(item)
+                                                    }
+                                                    className="ml-2 rounded bg-red-500 px-2 py-1 text-white hover:bg-red-700"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
 
-                    {(items.total > items.per_page) && (
-                        <PaginationLinks links={items.links} />
-                    )}
-
+                        <PaginationLinks meta={items.meta} />
                     </>
-
                 ) : (
-                    <p className="text-gray-600 py-4 ps-1 font-medium">No tags found.</p>
+                    <p className="py-4 ps-1 font-medium text-gray-600">
+                        No tags found.
+                    </p>
                 )}
-
-                
-
             </div>
             <br />
-            <ConfirmDeleteModal size="md" show={showModal} toDelete={toDelete} onDeleteConfirmation={handleDeleteConfirmation} />
-
+            <ConfirmDeleteModal
+                size="md"
+                show={showModal}
+                toDelete={toDelete}
+                onDeleteConfirmation={handleDeleteConfirmation}
+            />
         </MainLayout>
     );
 };

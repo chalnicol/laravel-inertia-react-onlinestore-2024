@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+use App\Http\Resources\CategoryResource;
+
 use App\Models\Category;
 use Inertia\Inertia;
 
@@ -15,29 +17,33 @@ class CategoryController extends Controller
 
         $search = $request->input('search');
         
-        $input =  $request->only(['search']);
-
         // If no search query, return all Categorys, otherwise filter by search query
         $categories = Category::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
-            ->with(['products'])
+            ->with(['products', 'parent'])
             ->orderByDesc('updated_at')
             ->paginate(15)
             ->withQueryString();
              // Adjust pagination as needed
             
-        return inertia('Auth/Admin/Categories/CategoryIndex', ['items' => $categories, 'filters' => $input ]);
+        return inertia('Auth/Admin/Categories/CategoryIndex', [
+            'items' => CategoryResource::collection($categories), 
+            'filters' => $request->only(['search'])
+        ]);
     }
     public function create()
     {
-        return inertia('Auth/Admin/Categories/CategoryCreate');
+        return inertia('Auth/Admin/Categories/CategoryCreate', [ 
+            'categories' => CategoryResource::collection(Category::all())
+        ]);
     }
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
+            'parent_id' => 'nullable|integer|exists:categories,id'
         ]);
 
         $slug = Str::slug($request->name);
@@ -45,6 +51,7 @@ class CategoryController extends Controller
         Category::create([
             'name' => ucfirst($request->name),
             'slug' => $slug,
+            'parent_id' => $request->parent_id,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');
@@ -52,13 +59,19 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
-        return inertia('Auth/Admin/Categories/CategoryEdit', ['category' => $category]);
+        // return $category;
+
+        return inertia('Auth/Admin/Categories/CategoryEdit', [
+            'category' => $category->load(['parent']),
+            'categories' => CategoryResource::collection(Category::all())
+        ]);
     }
 
     public function update(Request $request, Category $category)
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+            'parent_id' => 'nullable|integer|exists:categories,id'
         ]);
 
         $slug = Str::slug($request->name);
@@ -66,6 +79,7 @@ class CategoryController extends Controller
         $category->update([
             'name' => ucfirst($request->name),
             'slug' => $slug,
+            'parent_id' => $request->parent_id,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category updated successfully.');

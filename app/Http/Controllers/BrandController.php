@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+use App\Http\Resources\BrandResource;
+
+
 use App\Models\Brand;
 use Inertia\Inertia;
 
@@ -28,7 +31,10 @@ class BrandController extends Controller
             ->withQueryString();
              // Adjust pagination as needed
             
-        return inertia('Auth/Admin/Brands/BrandIndex', ['brands' => $brands, 'filters' => $input ]);
+        return inertia('Auth/Admin/Brands/BrandIndex', [
+            'brands' => BrandResource::collection($brands), 
+            'filters' => $input 
+        ]);
     }
     public function create()
     {

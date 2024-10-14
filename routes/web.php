@@ -29,15 +29,18 @@ use Inertia\Inertia;
 //     ]);
 // });
 
+// Route::get('/home', function () {
+//     return Inertia::render('Home');
+// })->middleware(['auth', 'verified'])->name('home');
+
+
 //public routes
-Route::get('/',  [PageController::class, 'welcome'])->name('welcome');
+Route::get('/',  [PageController::class, 'index'])->name('welcome');
+
+Route::get('/get_filters', [PageController::class, 'getFilters'])->name('welcome.getFilters');
+
 Route::get('/product/{product}',  [PageController::class, 'show'])->name('product.show');
 
-
-
-Route::get('/home', function () {
-    return Inertia::render('Home');
-})->middleware(['auth', 'verified'])->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -62,8 +65,6 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
 
     Route::get('/admin/users', [UserController::class, 'index'])->name('users.index');
     Route::put('/admin/users/{user}', [UserController::class, 'toggleAdminRole'])->name('users.toggleRole');
-
-    
 
 });
 

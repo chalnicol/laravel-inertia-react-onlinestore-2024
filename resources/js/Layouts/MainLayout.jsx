@@ -1,12 +1,7 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
-import React, { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 
-export default function MainLayout ({ header, children }) {
-
+export default function MainLayout({ header, children }) {
     const user = usePage().props.auth.user;
 
     const [showDropDown, setShowDropDown] = useState(false);
@@ -14,12 +9,15 @@ export default function MainLayout ({ header, children }) {
     const dropdownRef = useRef(null);
 
     const toggleDropDown = () => {
-        setShowDropDown( prevValue => !prevValue);
-    }
-    
+        setShowDropDown((prevValue) => !prevValue);
+    };
+
     const handleBlur = (e) => {
         // Check if the clicked element is outside the dropdown
-        if (dropdownRef.current && !dropdownRef.current.contains(e.relatedTarget)) {
+        if (
+            dropdownRef.current &&
+            !dropdownRef.current.contains(e.relatedTarget)
+        ) {
             setShowDropDown(false);
         }
     };
@@ -29,86 +27,94 @@ export default function MainLayout ({ header, children }) {
     // }, []);
 
     return (
-        <div className="min-h-screen">
-
+        <div className="flex min-h-dvh flex-col">
             <nav className="h-[58px] max-h-[58px] bg-sky-800">
-                <div className="h-full max-w-7xl mx-auto flex justify-between items-center px-4">
-
+                <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4">
                     <div className="flex items-center gap-3">
-                        
-                        <Link href="/" className="inline-flex gap-2 items-center ">
-                            <ApplicationLogo className="w-8"/>
-                            <span className="text-lg font-bold text-white">maNong CENtral</span>
+                        <Link
+                            href="/"
+                            className="inline-flex items-center gap-2"
+                        >
+                            <img
+                                src="/assets/logo.png"
+                                alt="logo"
+                                className="w-28 object-contain"
+                            />
                         </Link>
-
-                       
-                       
                     </div>
 
                     <div className="text-sm">
-                        { user ? (
-
-                            <div className="inline-flex space-x-4 items-center">
-
-
-                                <Link className="text-white hover:text-gray-300 select-none">
+                        {user ? (
+                            <div className="inline-flex items-center space-x-4">
+                                <Link className="select-none text-white hover:text-gray-300">
                                     <span className="material-symbols-outlined text-xl">
                                         shopping_cart
                                     </span>
                                 </Link>
 
                                 {user && user.is_admin ? (
-                                    <Link href={route('admin.dashboard')} className="font-medium text-sm text-white hover:text-gray-300">Admin</Link>
-                                ) : null }
+                                    <Link
+                                        href={route('admin.dashboard')}
+                                        className="text-sm font-medium text-white hover:text-gray-300"
+                                    >
+                                        Admin
+                                    </Link>
+                                ) : null}
 
-                                <div ref={dropdownRef} className="relative">
+                                <div
+                                    ref={dropdownRef}
+                                    className="relative z-20"
+                                >
                                     <button
                                         type="button"
                                         onClick={toggleDropDown}
                                         onBlur={handleBlur}
-                                        className="inline-flex items-center rounded-md border border-transparent py-2 text-sm font-medium leading-4 text-white hover:text-gray-300 transition duration-150 ease-in-out  focus:outline-none"
+                                        className="inline-flex items-center rounded-md border border-transparent py-2 text-sm font-medium leading-4 text-white transition duration-150 ease-in-out hover:text-gray-300 focus:outline-none"
                                     >
                                         {user.name}
 
                                         <span className="material-symbols-outlined">
                                             arrow_drop_down
                                         </span>
-                                        
                                     </button>
 
-
                                     {showDropDown && (
-                                        
-                                        <div className="absolute shadow-lg flex flex-col items-end bg-white min-w-36 end-0 rounded overflow-hidden">
-                                            
-                                         
-                                           <Link href={route('profile.edit')} className="w-full hover:bg-gray-200">
-                                            <div className="w-full py-2 px-3">Profile</div>
-                                           </Link>
+                                        <div className="absolute end-0 flex min-w-36 flex-col items-end overflow-hidden rounded bg-white shadow-lg">
+                                            <Link
+                                                href={route('profile.edit')}
+                                                className="w-full hover:bg-gray-200"
+                                            >
+                                                <div className="w-full px-3 py-2">
+                                                    Profile
+                                                </div>
+                                            </Link>
 
-                                           <Link 
-                                                className="w-full text-start py-2 px-3 hover:bg-gray-200"
+                                            <Link
+                                                className="w-full px-3 py-2 text-start hover:bg-gray-200"
                                                 href={route('logout')}
                                                 method="post"
                                                 as="button"
                                             >
                                                 Log Out
                                             </Link>
-
-                                           
-
-                                            
-
-                                           
                                         </div>
                                     )}
-
                                 </div>
                             </div>
                         ) : (
                             <div className="flex gap-3">
-                                <Link href={route('login')} className="text-gray-200">Login</Link>
-                                <Link href={route('register')} className="text-gray-200">Register</Link>
+                                <Link
+                                    href={route('login')}
+                                    className="text-gray-200"
+                                >
+                                    Login
+                                </Link>
+                                <Link
+                                    href={route('register')}
+                                    className="text-gray-200"
+                                >
+                                    Register
+                                </Link>
                             </div>
                         )}
                     </div>
@@ -122,7 +128,13 @@ export default function MainLayout ({ header, children }) {
                 </header>
             )}
 
-            <main>{children}</main>
+            <main className="grow">{children}</main>
+
+            <footer className="bg-sky-800">
+                <div className="mx-auto max-w-7xl px-4 py-1 text-center text-xs text-gray-50 sm:px-6 lg:px-8">
+                    &copy; 2024 ManongCentral. All rights reserved.
+                </div>
+            </footer>
         </div>
     );
 }

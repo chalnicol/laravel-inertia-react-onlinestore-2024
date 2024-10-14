@@ -14,6 +14,9 @@ use App\Models\ProductVariant;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
+use App\Http\Resources\ProductResource;
+
+
 class ProductController extends Controller
 {
     //
@@ -42,7 +45,7 @@ class ProductController extends Controller
                         ->withQueryString();
 
         return Inertia::render('Auth/Admin/Products/ProductIndex', [
-            'items' => $products,
+            'items' => ProductResource::collection($products),
             'filters' => $request->only('search'),
         ]);
 

@@ -1,55 +1,55 @@
-import React from "react";
-import { router, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 
-export default function Thumbs ({ name, className='', withCreateBtn = false  }) {
+export default function Thumbs({
+    name,
+    className = '',
+    withCreateBtn = false,
+}) {
+    const buttonClasses =
+        'w-full py-1 text-white px-4 rounded bg-gray-400 hover:bg-gray-300 ' +
+        className;
 
-    const buttonClasses = 'w-full py-1 text-white px-4 rounded bg-gray-400 hover:bg-gray-300 ' + className  ;
-    
     return (
+        <div className="relative h-32 overflow-hidden rounded-lg bg-white text-center shadow-md">
+            <div className="absolute mb-4 h-full w-full">
+                <img
+                    src="/assets/test2.jpg"
+                    className="absolute h-full w-full rounded object-cover"
+                    alt={name}
+                />
 
-        <div className="bg-white h-32 shadow-md rounded-lg text-center relative overflow-hidden">
+                <div className="h-full w-full rounded bg-gray-900 opacity-50"></div>
 
-            <div className="w-full h-full absolute mb-4">
-
-                <img src="/assets/test2.jpg" className="absolute w-full h-full object-cover rounded" alt={name} />
-                    
-                <div className="bg-gray-900 rounded opacity-50 w-full h-full"></div>
-
-                <h2 className="absolute text-2xl font-semibold mb-2 text-white shadow-lg z-5 top-3 start-4">{name}</h2>
-
+                <h2 className="z-5 absolute start-4 top-3 mb-2 text-2xl font-semibold text-white shadow-lg">
+                    {name}
+                </h2>
             </div>
 
-            { withCreateBtn ? (
-
-                <div className="grid grid-cols-2 gap-2 absolute w-full z-10 p-3 bottom-0">
-                    <Link 
-                        href={`/admin/${name.toLowerCase()}`} 
-                        className={ buttonClasses }
+            {withCreateBtn ? (
+                <div className="absolute bottom-0 z-10 flex w-full flex-col gap-2 p-3 sm:flex-row">
+                    <Link
+                        href={`/admin/${name.toLowerCase()}`}
+                        className={buttonClasses}
                     >
                         View
                     </Link>
-                    <Link 
+                    <Link
                         href={`/admin/${name.toLowerCase()}/create`}
-                        className={ buttonClasses }
+                        className={buttonClasses}
                     >
                         + Add New
                     </Link>
                 </div>
-
             ) : (
-
-                <div className="grid grid-cols-1 absolute w-full z-10 p-3 bottom-0">
-                    <Link 
-                        href={`/admin/${name.toLowerCase()}`} 
-                        className={ buttonClasses }
+                <div className="absolute bottom-0 z-10 grid w-full p-3">
+                    <Link
+                        href={`/admin/${name.toLowerCase()}`}
+                        className={buttonClasses}
                     >
                         View
                     </Link>
                 </div>
-                
             )}
-
         </div>
-
     );
 }

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Tag;
 use Inertia\Inertia;
 
+use App\Http\Resources\TagResource;
+
 class TagController extends Controller
 {
     //
@@ -33,7 +35,10 @@ class TagController extends Controller
 
         
             
-        return inertia('Auth/Admin/Tags/TagIndex', ['items' => $tags, 'filters' => $input ]);
+        return inertia('Auth/Admin/Tags/TagIndex', [
+            'items' => TagResource::collection($tags), 
+            'filters' => $input 
+        ]);
     }
 
     public function destroy(Tag $tag)

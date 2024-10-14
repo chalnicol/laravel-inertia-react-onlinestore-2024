@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\User;
 use Inertia\Inertia;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
@@ -19,14 +20,21 @@ class UserController extends Controller
         // If no search query, return all brands, otherwise filter by search query
         $users = User::query()
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', '%' . $search . '%');
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%'); // Include email search
+                });
             })
+           
             ->orderByDesc('updated_at')
             ->paginate(15)
             ->withQueryString();
              // Adjust pagination as needed
             
-        return inertia('Auth/Admin/Users/UsersIndex', ['users' => $users, 'filters' => $input ]);
+        return inertia('Auth/Admin/Users/UsersIndex', [
+            'users' => UserResource::collection($users), 
+            'filters' => $input 
+        ]);
     }
 
     public function toggleAdminRole (User $user) {

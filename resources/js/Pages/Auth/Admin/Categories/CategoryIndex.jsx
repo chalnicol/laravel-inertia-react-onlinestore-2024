@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
-import debounce from 'lodash/debounce';
-import MainLayout from '@/Layouts/MainLayout';
 import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
 import FlashMessage from '@/Components/FlashMessage';
 import PaginationLinks from '@/Components/PaginationLinks';
-
+import MainLayout from '@/Layouts/MainLayout';
+import { Head, Link, router } from '@inertiajs/react';
+import debounce from 'lodash/debounce';
+import { useState } from 'react';
 
 const CategoryIndex = ({ items, filters, flash }) => {
-
     // const { brands } = usePage().props;
     const [showModal, setShowModal] = useState(false);
     const [toDelete, setToDelete] = useState(null);
@@ -18,8 +16,12 @@ const CategoryIndex = ({ items, filters, flash }) => {
 
     // Function to handle search with debounce
     const handleSearch = debounce((query) => {
-        router.get(route('categories.index'), { search: query }, { preserveState: true, replace:true });
-    }, 500); 
+        router.get(
+            route('categories.index'),
+            { search: query },
+            { preserveState: true, replace: true },
+        );
+    }, 500);
 
     // Handle onChange and update search state
     const onSearchChange = (e) => {
@@ -29,27 +31,27 @@ const CategoryIndex = ({ items, filters, flash }) => {
 
     const confirmDelete = (item) => {
         setToDelete(item);
-        setShowModal(true); 
-    }
-    const handleDeleteConfirmation = ( confirmed ) => {
+        setShowModal(true);
+    };
+    const handleDeleteConfirmation = (confirmed) => {
         if (confirmed) {
-            router.delete(`/admin/products/${toDelete.id}`, {
+            router.delete(`/admin/categories/${toDelete.id}`, {
                 onSuccess: () => setShowModal(false),
             });
-        }   else {
+        } else {
             setShowModal(false);
         }
     };
-   
-
 
     return (
-
-        <MainLayout 
+        <MainLayout
             header={
                 <>
-                    <div className="text-sm mb-0.5">
-                        <Link href={'/admin'} className="text-orange-600">Admin</Link> &raquo;
+                    <div className="mb-0.5 text-sm">
+                        <Link href={'/admin'} className="text-orange-600">
+                            Admin
+                        </Link>{' '}
+                        &raquo;
                     </div>
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">
                         Categories
@@ -58,88 +60,127 @@ const CategoryIndex = ({ items, filters, flash }) => {
             }
         >
             <Head title="Categories" />
-            
-            <div className="max-full max-w-7xl px-4 mx-auto">
 
+            <div className="max-full mx-auto max-w-7xl px-4">
                 <FlashMessage flash={flash} />
 
-                <div className="md:flex gap-2 w-full mt-4">
-
-                    <div className="grow order-2 md:order-1">
+                <div className="mt-4 w-full gap-2 md:flex">
+                    <div className="order-2 grow md:order-1">
                         <input
                             type="text"
                             placeholder="Filter categories..."
                             value={search}
                             onChange={onSearchChange} // Trigger search on input change
-                            className="border border-gray-300 px-4 py-2 rounded w-full mb-2"
+                            className="mb-2 w-full rounded border border-gray-300 px-4 py-2"
                         />
                     </div>
-                    <Link href={route('categories.create')} className="order-1 md:order-2 w-full mb-2 md:w-auto bg-sky-900 hover:bg-sky-800 text-white px-3 py-2 rounded-md border text-sm font-medium flex items-center justify-center">
+                    <Link
+                        href={route('categories.create')}
+                        className="order-1 mb-2 flex w-full items-center justify-center rounded-md border bg-sky-900 px-3 py-2 text-sm font-medium text-white hover:bg-sky-800 md:order-2 md:w-auto"
+                    >
                         + New Category
                     </Link>
-                    
-                   
                 </div>
-               
-                {(items.data && items.data.length > 0) ? (
+
+                {items.data && items.data.length > 0 ? (
                     <>
-                    <div className="overflow-x-auto w-full mb-6">
-                        <table className="min-w-[600px] w-full text-sm">
-                            <thead className="bg-gray-800 text-white">
-                                <tr>
-                                    <th className="px-4 py-2 text-left">#</th>
-                                    <th className="px-4 py-2 text-left">Name</th>
-                                    <th className="px-4 py-2 text-left">Product Linked</th>
+                        <div className="mb-6 w-full overflow-x-auto">
+                            <table className="w-full min-w-[600px] text-sm">
+                                <thead className="bg-gray-800 text-white">
+                                    <tr>
+                                        <th className="px-4 py-2 text-left">
+                                            #
+                                        </th>
+                                        <th className="px-4 py-2 text-left">
+                                            Name
+                                        </th>
 
-                                    <th className="px-4 py-2 text-left">Slug</th>
-                                    <th className="px-4 py-2 text-left">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {items.data.map(item => (
-                                    <tr key={item.id} className="odd:bg-gray-100 even:bg-gray-200 border-gray-300">
-                                        <td className="px-4 py-2">{item.id}</td>
-                                        <td className="px-4 py-2">{item.name}</td>
-                                        <td className="px-4 py-2">{item.products.length}</td>
-
-                                        <td className="px-4 py-2">{item.slug}</td>
-                                        <td className="px-4 py-2">
-                                            <button 
-                                                onClick={() => router.get(`/admin/categories/${item.id}/edit`)} 
-                                                className="bg-yellow-500 hover:bg-yellow-700 text-white py-1 px-2 rounded">
-                                                Edit
-                                            </button>
-                                            <button 
-                                                onClick={ () => confirmDelete(item) }
-                                                className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded ml-2">
-                                                Delete
-                                            </button>
-                                        </td>
+                                        <th className="px-4 py-2 text-left">
+                                            Slug
+                                        </th>
+                                        <th className="px-4 py-2 text-left">
+                                            Parent
+                                        </th>
+                                        <th className="px-4 py-2 text-left">
+                                            Products Linked
+                                        </th>
+                                        <th className="px-4 py-2 text-left">
+                                            Actions
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {items.data.map((item) => (
+                                        <tr
+                                            key={item.id}
+                                            className="border-gray-300 odd:bg-gray-100 even:bg-gray-200"
+                                        >
+                                            <td className="px-4 py-2">
+                                                {item.id}
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                {item.name}
+                                            </td>
 
-    
+                                            <td className="px-4 py-2">
+                                                {item.slug}
+                                            </td>
 
-                    {(items.total > items.per_page) && (
-                        <PaginationLinks links={items.links} />
-                    )}
+                                            <td className="px-4 py-2">
+                                                {item.parent ? (
+                                                    <span>
+                                                        {item.parent.name}
+                                                    </span>
+                                                ) : (
+                                                    <span>--</span>
+                                                )}
+                                            </td>
 
+                                            <td className="px-4 py-2">
+                                                {item.products.length}
+                                            </td>
+
+                                            <td className="px-4 py-2">
+                                                <button
+                                                    onClick={() =>
+                                                        router.get(
+                                                            `/admin/categories/${item.id}/edit`,
+                                                        )
+                                                    }
+                                                    className="rounded bg-yellow-500 px-2 py-1 text-white hover:bg-yellow-700"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        confirmDelete(item)
+                                                    }
+                                                    className="ml-2 rounded bg-red-500 px-2 py-1 text-white hover:bg-red-700"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <PaginationLinks meta={items.meta} />
                     </>
-
                 ) : (
-                    <p className="text-gray-600 py-4 ps-1 font-medium">No categories found.</p>
+                    <p className="py-4 ps-1 font-medium text-gray-600">
+                        No categories found.
+                    </p>
                 )}
-
-                
-
             </div>
 
-            <ConfirmDeleteModal size="md" show={showModal} toDelete={toDelete} onDeleteConfirmation={handleDeleteConfirmation} />
-
-
+            <ConfirmDeleteModal
+                size="md"
+                show={showModal}
+                toDelete={toDelete}
+                onDeleteConfirmation={handleDeleteConfirmation}
+            />
         </MainLayout>
     );
 };

@@ -1,8 +1,10 @@
 import React from 'react';
 
-export default function PriceRange ({ variants, className = '' }) {
+export default function VariantsPriceRange ({ variants, className = '' }) {
 
-    const prices = variants.map(variant => variant.variant_base_price);
+    const prices = variants.map(
+        variant => variant.variant_is_promo ? variant.variant_discounted_price : variant.variant_base_price
+    );
 
     // Find the minimum and maximum prices
     const minPrice = Math.min(...prices);
