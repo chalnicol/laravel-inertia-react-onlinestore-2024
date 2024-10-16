@@ -14,21 +14,47 @@ class BrandSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        // Brand::factory()->count(100)->create();
-
+    
         $brands = [
-            'Nike', 
-            'Adidas', 
-            'Puma', 
-            'Under Armour', 
-            'Reebok', 
-            'Coca-cola', 
-            'Lays', 
-            'Cheetos',
-            'Surf',
-            'Tide',
+            "Nike",
+            "Adidas",
+            "Puma",
+            "Under Armour",
+            "Reebok",
+            "Li-Ning",
+            "San Miguel Corporation",
+            "Ginebra San Miguel",
+            "Tanduay Distillers",
+            "Emperador Distillers",
+            "Philippine Tanduay",
+            "Chivas Regal",
+            "Johnnie Walker",
+            "Jack Daniel's",
+            "Barefoot Wine",
+            "Wolf Blass",
+            "Jacob's Creek",
+            "Concha y Toro",
+            "Robert Mondavi",
+            "Yellow Tail",
+            "Almaviva",
+            "Bodega Sietecueros",
+            "La Vie Parisienne",
+            "Bodega Aye",
+            "Mang Inasal",
+            "Jollibee",
+            "Max's Restaurant",
+            "Del Monte",
+            "Magnolia",
+            "Purefoods",
+            "Nestlé Philippines",
+            "NutriAsia",
+            "Bounty Fresh",
+            "Datu Puti",
+            "Mang Tomas",
+            "Lucky Me!",
+            "Nissin"
         ];
+        
 
         foreach ($brands as $brand) {
             Brand::create([

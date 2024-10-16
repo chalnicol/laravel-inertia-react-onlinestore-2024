@@ -111,122 +111,24 @@ class PageController extends Controller
     
 
     
-    
-    public function welcome(Request $request)
-    {
-        // Retrieve the search and filter inputs from the request
-        $search = $request->input('search');
-        $categories = $request->input('categories', []);
-        $brands = $request->input('brands', []);
-        $minPrice = $request->input('minPrice');
-        $maxPrice = $request->input('maxPrice');
-        $sortCriteria = $request->input('sortCriteria');
+    public function welcome (Request $request) {
 
-        // Convert category and brand inputs to arrays if they are comma-separated strings
-        if (is_string($categories)) {
-            $categories = explode(',', $categories); // Converts '5,3' into [5, 3]
-        }
-        if (is_string($brands)) {
-            $brands = explode(',', $brands); // Converts '5,3' into [5, 3]
-        }
+       
+        $products = Product::with(['brand', 'category', 'variants'])
+        ->paginate(15);
 
-        // Start building the query
-        $query = Product::query();
-
-        // Search logic
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhereHas('category', function ($q) use ($search) {
-                        $q->where('name', 'like', '%' . $search . '%');
-                    })
-                    ->orWhereHas('brand', function ($q) use ($search) {
-                        $q->where('name', 'like', '%' . $search . '%');
-                    });
-            });
-        }
-
-        // Filter by categories
-        if (!empty($categories)) {
-            $query->whereIn('category_id', $categories);
-        }
-
-        // Filter by brands
-        if (!empty($brands)) {
-            $query->whereIn('brand_id', $brands);
-        }
-
-        // Filter by price range
-        if ($minPrice && $maxPrice && $minPrice !== '' && $maxPrice !== '') {
-            $maxPrice = $maxPrice < $minPrice ? $minPrice : $maxPrice; // Ensure maxPrice is not less than minPrice
-
-            $query->where(function ($q) use ($minPrice, $maxPrice) {
-                $q->whereHas('variants', function ($query) use ($minPrice, $maxPrice) {
-                    $query->whereBetween('variant_base_price', [$minPrice, $maxPrice]);
-                })
-                ->orWhere(function ($query) use ($minPrice, $maxPrice) {
-                    $query->whereBetween('base_price', [$minPrice, $maxPrice]);
-                });
-            });
-        } elseif ($minPrice && $minPrice !== '') {
-            $query->where(function ($q) use ($minPrice) {
-                $q->whereHas('variants', function ($query) use ($minPrice) {
-                    $query->where('variant_base_price', '>=', $minPrice);
-                })
-                ->orWhere(function ($query) use ($minPrice) {
-                    $query->where('base_price', '>=', $minPrice);
-                });
-            });
-        } elseif ($maxPrice && $maxPrice !== '') {
-            $query->where(function ($q) use ($maxPrice) {
-                $q->whereHas('variants', function ($query) use ($maxPrice) {
-                    $query->where('variant_base_price', '<=', $maxPrice);
-                })
-                ->orWhere(function ($query) use ($maxPrice) {
-                    $query->where('base_price', '<=', $maxPrice);
-                });
-            });
-        }
-
-        // Sorting logic
-        switch ($sortCriteria) {
-            case 'date_asc':
-                $query->orderBy('created_at', 'asc');
-                break;
-            case 'date_desc':
-                $query->orderBy('created_at', 'desc');
-                break;
-            case 'price_asc':
-                $query->selectRaw('products.*, COALESCE((SELECT MIN(variant_base_price) FROM product_variants WHERE product_variants.product_id = products.id), products.base_price) as sort_price')
-                    ->orderBy('sort_price', 'asc');
-                break;
-            case 'price_desc':
-                $query->selectRaw('products.*, COALESCE((SELECT MIN(variant_base_price) FROM product_variants WHERE product_variants.product_id = products.id), products.base_price) as sort_price')
-                    ->orderBy('sort_price', 'desc');
-                break;
-            default: 
-                $query->orderBy('created_at', 'desc');
-        }
-
-        // Execute the query and paginate the results
-        $products = $query
-            ->with(['variants', 'tags', 'brand', 'category'])
-            ->paginate(16);
-            // ->withQueryString(); // Preserve query string for filtering
-
-        // Return the response to Inertia
-        return Inertia::render('MainPage', [
-            'products' => ProductResource::collection($products),
-            'filters' => $request->only('search', 'categories', 'brands', 'minPrice', 'maxPrice', 'sortCriteria')
+        return Inertia::render('Welcome', [
+            'products' => ProductResource::collection($products)
         ]);
-    }
 
+    }
 
      // Endpoint to fetch categories
     public function getFilters () 
     {
         $categories = Category::with('allChildren')->select('id', 'name', 'parent_id')->whereNull('parent_id')->get(); // Get only top-level categories
 
+        
         return response()->json([
             'categories' => $categories,
             'brands'=> Brand::select('id', 'name')->get()
@@ -242,6 +144,9 @@ class PageController extends Controller
         ]);
 
     }
+
+    
+
 
   
 

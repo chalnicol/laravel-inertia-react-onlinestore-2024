@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+use App\Rules\ValidParentCategory;
 use App\Http\Resources\CategoryResource;
 
 use App\Models\Category;
@@ -22,7 +23,7 @@ class CategoryController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
-            ->with(['products', 'parent'])
+            ->with(['parent', 'children'])
             ->orderByDesc('updated_at')
             ->paginate(15)
             ->withQueryString();
@@ -36,22 +37,23 @@ class CategoryController extends Controller
     public function create()
     {
         return inertia('Auth/Admin/Categories/CategoryCreate', [ 
-            'categories' => CategoryResource::collection(Category::all())
+            'categories' => Category::with('allChildren')->select('id', 'name', 'parent_id')->whereNull('parent_id')->get()
         ]);
     }
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
-            'parent_id' => 'nullable|integer|exists:categories,id'
+            'parent_id' => 'nullable|integer|exists:categories,id',
         ]);
 
         $slug = Str::slug($request->name);
 
         Category::create([
-            'name' => ucfirst($request->name),
+            'name' => ucwords($request->name),
             'slug' => $slug,
             'parent_id' => $request->parent_id,
+            'active' => $request->active
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');
@@ -63,23 +65,25 @@ class CategoryController extends Controller
 
         return inertia('Auth/Admin/Categories/CategoryEdit', [
             'category' => $category->load(['parent']),
-            'categories' => CategoryResource::collection(Category::all())
+            'categories' => Category::with('allChildren')->select('id', 'name', 'parent_id')->whereNull('parent_id')->get()
         ]);
     }
 
     public function update(Request $request, Category $category)
     {
+        
         $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'parent_id' => 'nullable|integer|exists:categories,id'
+            'name' => 'required|string|max:255',
+            'parent_id' => ['nullable', 'integer', 'exists:categories,id', new ValidParentCategory($category)],
         ]);
 
         $slug = Str::slug($request->name);
 
         $category->update([
-            'name' => ucfirst($request->name),
+            'name' => ucwords($request->name),
             'slug' => $slug,
             'parent_id' => $request->parent_id,
+            'active' => $request->active
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category updated successfully.');

@@ -43,7 +43,7 @@ const ProductIndex = ({ items, filters, flash }) => {
         }
     };
 
-    console.log(items);
+    // console.log(items);
 
     return (
         <MainLayout

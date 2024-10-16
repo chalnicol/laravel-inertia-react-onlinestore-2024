@@ -174,6 +174,7 @@ class CategorySeeder extends Seeder
                     'name' => $key, // Use the key as the category name
                     'slug' => Str::slug($key), // Generate a slug from the key
                     'parent_id' => $parentId, // Use parent ID if provided
+                    'active' => true
                 ]);
 
                 // Recursively call the function for subcategories
@@ -184,6 +185,7 @@ class CategorySeeder extends Seeder
                     'name' => $subcategories, // Use the subcategory name directly
                     'slug' => Str::slug($subcategories), // Generate slug from subcategory name
                     'parent_id' => $parentId, // Use parent ID if provided
+                    'active' => true
                 ]);
             }
         }

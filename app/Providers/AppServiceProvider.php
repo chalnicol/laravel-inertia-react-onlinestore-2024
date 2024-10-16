@@ -30,6 +30,15 @@ class AppServiceProvider extends ServiceProvider
                     'error' => session('error'),
                 ];
             },
+            'cartCount' => function () {
+                // Get the cart from the session
+                $cart = session()->get('cart', []);
+                
+                // Calculate the total quantity of items in the cart
+                return array_reduce($cart, function ($carry, $item) {
+                    return $carry + $item['quantity'];
+                }, 0);
+            }
         ]);
         
     }

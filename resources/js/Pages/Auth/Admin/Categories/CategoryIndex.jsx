@@ -98,11 +98,15 @@ const CategoryIndex = ({ items, filters, flash }) => {
                                         <th className="px-4 py-2 text-left">
                                             Slug
                                         </th>
+
                                         <th className="px-4 py-2 text-left">
                                             Parent
                                         </th>
                                         <th className="px-4 py-2 text-left">
-                                            Products Linked
+                                            Children (count)
+                                        </th>
+                                        <th className="px-4 py-2 text-left">
+                                            Active
                                         </th>
                                         <th className="px-4 py-2 text-left">
                                             Actions
@@ -137,7 +141,25 @@ const CategoryIndex = ({ items, filters, flash }) => {
                                             </td>
 
                                             <td className="px-4 py-2">
-                                                {item.products.length}
+                                                {item.children.length > 0 ? (
+                                                    <div className="w-10 rounded-full bg-lime-600 text-center text-sm font-medium text-white">
+                                                        {item.children.length}
+                                                    </div>
+                                                ) : (
+                                                    <span>-</span>
+                                                )}
+                                            </td>
+
+                                            <td className="px-4 py-2">
+                                                {item.active ? (
+                                                    <span className="material-symbols-outlined text-[1.2rem] leading-snug text-green-600">
+                                                        check_circle
+                                                    </span>
+                                                ) : (
+                                                    <span className="material-symbols-outlined text-[1.2rem] leading-snug text-yellow-600">
+                                                        cancel
+                                                    </span>
+                                                )}
                                             </td>
 
                                             <td className="px-4 py-2">
@@ -166,7 +188,7 @@ const CategoryIndex = ({ items, filters, flash }) => {
                             </table>
                         </div>
 
-                        <PaginationLinks meta={items.meta} />
+                        <PaginationLinks meta={items.meta} className="mb-6" />
                     </>
                 ) : (
                     <p className="py-4 ps-1 font-medium text-gray-600">

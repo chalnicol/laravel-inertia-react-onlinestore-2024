@@ -8,6 +8,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\CartController;
+
 
 
 
@@ -35,11 +37,15 @@ use Inertia\Inertia;
 
 
 //public routes
-Route::get('/',  [PageController::class, 'index'])->name('welcome');
+// Route::get('/',  [PageController::class, 'index'])->name('welcome');
+Route::get('/',  [PageController::class, 'welcome'])->name('welcome');
+
 
 Route::get('/get_filters', [PageController::class, 'getFilters'])->name('welcome.getFilters');
 
 Route::get('/product/{product}',  [PageController::class, 'show'])->name('product.show');
+
+
 
 
 Route::middleware('auth')->group(function () {
@@ -49,6 +55,19 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/brands/search', [BrandController::class, 'search'])->name('brands.search');
     Route::get('/categories/search', [CategoryController::class, 'search'])->name('categories.search');
+
+    Route::get('/cart',  [CartController::class, 'index'])->name('cart.index');
+
+    Route::post('/cart/add',  [CartController::class, 'addItem'])->name('cart.add');
+    Route::post('/cart/update',  [CartController::class, 'updateItem'])->name('cart.update');
+    Route::post('/cart/remove',  [CartController::class, 'removeItems'])->name('cart.remove');
+
+    // Route::delete('/cart/clear',  [CartController::class, 'clearAll'])->name('cart.clear');
+
+
+    
+
+
 });
 
 Route::middleware(['auth', AdminMiddleware::class])->group(function () {

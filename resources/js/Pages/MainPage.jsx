@@ -114,6 +114,10 @@ const MainPage = ({ products, filters }) => {
         }));
     };
 
+    const handleCategorySelect = (id) => {
+        console.log('id', id);
+    };
+
     const hasActiveFilters = useMemo(() => {
         return (
             filtersData.categories.length > 0 ||
@@ -190,9 +194,6 @@ const MainPage = ({ products, filters }) => {
                                     )}
                                 </div>
                                 <div>
-                                    {/* <p className="mb-2 text-sm font-semibold">
-                                    Search
-                                </p> */}
                                     <input
                                         type="text"
                                         name="search"
@@ -207,32 +208,12 @@ const MainPage = ({ products, filters }) => {
                                         Category
                                     </p>
 
-                                    {/* {categories.map((category) => (
-                                        <div key={category.id}>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={filtersData.categories.includes(
-                                                        category.id,
-                                                    )}
-                                                    onChange={() =>
-                                                        handleCategoryFilterSelect(
-                                                            category.id,
-                                                        )
-                                                    }
-                                                    className="h-3 w-3 text-sky-700 focus:ring-sky-700"
-                                                />
-                                                <span className="ml-2 text-xs">
-                                                    {category.name}
-                                                </span>
-                                            </label>
-                                        </div>
-                                    ))} */}
-
                                     {categories.map((category) => (
                                         <CategoryItem
+                                            fontSize="xs"
                                             key={category.id}
                                             category={category}
+                                            onSelect={handleCategorySelect}
                                         />
                                     ))}
                                 </div>
@@ -240,22 +221,30 @@ const MainPage = ({ products, filters }) => {
                                     <p className="mb-2 text-sm font-semibold">
                                         Brands
                                     </p>
-
+                                    <input
+                                        type="text"
+                                        placeholder="search brand here"
+                                        className="mb-1 w-full rounded px-3 py-1 text-xs"
+                                    />
                                     {brands.map((brand) => (
                                         <div key={brand.id}>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={filtersData.brands.includes(
+                                            <input
+                                                id={`brand-${brand.id}`}
+                                                type="checkbox"
+                                                checked={filtersData.brands.includes(
+                                                    brand.id,
+                                                )}
+                                                onChange={() =>
+                                                    handleBrandFilterSelect(
                                                         brand.id,
-                                                    )}
-                                                    onChange={() =>
-                                                        handleBrandFilterSelect(
-                                                            brand.id,
-                                                        )
-                                                    }
-                                                    className="h-3 w-3 text-sky-700 focus:ring-sky-700"
-                                                />
+                                                    )
+                                                }
+                                                className="h-3 w-3 text-sky-700 focus:ring-sky-700"
+                                            />
+                                            <label
+                                                className="inline-flex items-center"
+                                                htmlFor={`brand-${brand.id}`}
+                                            >
                                                 <span className="ml-2 text-xs">
                                                     {brand.name}
                                                 </span>

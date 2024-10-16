@@ -1,12 +1,19 @@
 // ProductDetail.jsx
+import Loader from '@/Components/Loader';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 
-const ProductDetail = ({ product }) => {
-    const [order, setOrder] = useState({
+import FlashMessage from '@/Components/FlashMessage';
+import { useDispatch } from 'react-redux';
+
+const ProductDetail = ({ product, flash, errors }) => {
+    const dispatch = useDispatch();
+    const [processing, setProcessing] = useState(false);
+    const [cartItem, setCartItem] = useState({
+        id: product.data.id,
+        name: product.data.name,
         quantity: 1,
-        promo: false,
         purchase_price:
             product.data.variants.length > 0
                 ? product.data.variants[0].variant_selling_price
@@ -14,14 +21,34 @@ const ProductDetail = ({ product }) => {
         variant: product.data.variants.length ? product.data.variants[0] : null,
     });
 
+    // console.log(errors);
+
     const handleAddToCart = () => {
-        // Implement add to cart logic
+        setProcessing(true);
+        router.post(route('cart.add'), cartItem, {
+            preserveState: true,
+            replace: true,
+            onSuccess: () => {
+                // dispatch(addItemToCart(cartItem));
+            },
+            onError: (error) => {
+                console.log('Error adding to cart :', error);
+            },
+            onFinish: () => {
+                setProcessing(false);
+                setCartItem((prevOrder) => ({
+                    ...prevOrder,
+                    quantity: 1,
+                }));
+            },
+        });
     };
+
     const handleCheckout = () => {
         // Implement add to cart logic
     };
     const handleQuantityChange = (mode) => {
-        setOrder((prevOrder) => ({
+        setCartItem((prevOrder) => ({
             ...prevOrder,
             quantity:
                 mode === 'add'
@@ -30,14 +57,14 @@ const ProductDetail = ({ product }) => {
         }));
     };
     const handleQuantityInputChange = (e) => {
-        setOrder((prevOrder) => ({
+        setCartItem((prevOrder) => ({
             ...prevOrder,
             quantity: Math.max(e.target.value, 1),
         }));
     };
 
     const handleVariantSelect = (variant) => {
-        setOrder((prevOrder) => ({
+        setCartItem((prevOrder) => ({
             ...prevOrder,
             variant: variant,
             purchase_price: variant.variant_selling_price,
@@ -47,9 +74,10 @@ const ProductDetail = ({ product }) => {
     return (
         <MainLayout>
             <Head title="Product Detail" />
+            <div className="mx-auto w-full max-w-7xl">
+                <FlashMessage flash={flash} />
 
-            <div className="mx-auto w-full max-w-7xl py-6">
-                <div className="lg:flex">
+                <div className="w-full py-6 lg:flex">
                     <div className="mb-6 grow gap-6 px-4 md:flex lg:mb-0">
                         <img
                             src={
@@ -71,7 +99,7 @@ const ProductDetail = ({ product }) => {
                                 </p>
 
                                 <p className="mb-1 text-3xl font-medium text-orange-500">
-                                    ₱{order.purchase_price}
+                                    ₱{cartItem.purchase_price}
                                 </p>
 
                                 {product.data.is_promo && (
@@ -82,7 +110,7 @@ const ProductDetail = ({ product }) => {
                                                 <span>
                                                     ₱
                                                     {
-                                                        order.variant
+                                                        cartItem.variant
                                                             .variant_base_price
                                                     }
                                                 </span>
@@ -152,8 +180,9 @@ const ProductDetail = ({ product }) => {
                                         </span>
                                         <div>
                                             <div className="py-1">
-                                                {order.variant
-                                                    ? order.variant.variant_name
+                                                {cartItem.variant
+                                                    ? cartItem.variant
+                                                          .variant_name
                                                     : ''}
                                             </div>
 
@@ -163,7 +192,7 @@ const ProductDetail = ({ product }) => {
                                                         <img
                                                             key={variant.id}
                                                             id={variant.id}
-                                                            className={`mb-1 h-10 w-12 cursor-pointer border object-cover transition duration-300 ease-out ${order.variant.id === variant.id ? 'border-orange-600 shadow-md' : 'border-gray-500'}`}
+                                                            className={`mb-1 h-10 w-12 cursor-pointer border object-cover transition duration-300 ease-out ${cartItem.variant.id === variant.id ? 'border-orange-600 shadow-md' : 'border-gray-500'}`}
                                                             src={
                                                                 variant.image
                                                                     ? `/storage/${variant.image}`
@@ -202,7 +231,7 @@ const ProductDetail = ({ product }) => {
                                         type="text"
                                         id="quantity"
                                         name="quantity"
-                                        value={order.quantity}
+                                        value={cartItem.quantity}
                                         className="h-8 w-20 border border-gray-300"
                                         onChange={handleQuantityInputChange}
                                     />
@@ -220,13 +249,13 @@ const ProductDetail = ({ product }) => {
 
                             <div className="my-5 flex w-full gap-3">
                                 <button
-                                    className="w-1/2 rounded bg-yellow-500 px-4 py-2 text-white xl:w-1/3"
+                                    className="w-1/2 rounded bg-yellow-500 px-4 py-2 text-white hover:bg-yellow-600 xl:w-1/3"
                                     onClick={handleAddToCart}
                                 >
                                     Add to Cart
                                 </button>
                                 <button
-                                    className="w-1/2 rounded bg-orange-500 px-4 py-2 text-white xl:w-1/3"
+                                    className="w-1/2 rounded bg-orange-500 px-4 py-2 text-white hover:bg-orange-600 xl:w-1/3"
                                     onClick={handleCheckout}
                                 >
                                     Checkout
@@ -334,6 +363,7 @@ const ProductDetail = ({ product }) => {
                     </p>
                 </div>
             </div>
+            {processing && <Loader />}
         </MainLayout>
     );
 };
